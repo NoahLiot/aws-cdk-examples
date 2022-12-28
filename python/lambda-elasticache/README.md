@@ -1,58 +1,47 @@
+<!--BEGIN STABILITY BANNER-->
+---
 
-# Welcome to your CDK Python project!
+![Stability: Stable](https://img.shields.io/badge/stability-Stable-success.svg?style=for-the-badge)
 
-This is a blank project for CDK development with Python.
+> **This is a stable example. It should successfully build out of the box**
+>
+> This example is built on Construct Libraries marked "Stable" and does not have any infrastructure prerequisites to build.
+---
+<!--END STABILITY BANNER-->
 
-The `cdk.json` file tells the CDK Toolkit how to execute your app.
+# Overview
 
-This project is set up like a standard Python project.  The initialization
-process also creates a virtualenv within this project, stored under the `.venv`
-directory.  To create the virtualenv it assumes that there is a `python3`
-(or `python` for Windows) executable in your path with access to the `venv`
-package. If for any reason the automatic creation of the virtualenv fails,
-you can create the virtualenv manually.
+This CDK examples build an [Amazon ElastiCache for Redis](https://aws.amazon.com/elasticache/redis/) cluster and uses it to create a very simple data centric orchestration for [AWS Lambda](https://aws.amazon.com/lambda/) functions. We are using Redis as it gots Atomic writes, which ensure that a workflow cannot end up in an invalid state while providing thousands of write per second scalability and sub-millisecond latency.
 
-To manually create a virtualenv on MacOS and Linux:
+# Build/Deploy
 
-```
-$ python3 -m venv .venv
-```
+## Building the Docker image of the service independently
 
-After the init process completes and the virtualenv is created, you can use the following
-step to activate your virtualenv.
+The following guidance is for any of the Lambda service.
+If you run `runlocally.sh` you will build a Lambda container image and run it locally on port `9000`.
+You can then use `calllocally.sh` to call that Lambda function. In order for the function to run, you will need to run Redis locally (I recommend using the [official Docker image](https://hub.docker.com/_/redis)).
 
-```
-$ source .venv/bin/activate
-```
+[TODO] Add what a call and response would look like.
 
-If you are a Windows platform, you would activate the virtualenv like this:
+## Deploying the construct using CDK
 
-```
-% .venv\Scripts\activate.bat
-```
+To run the stack you will need to add a `secrets.json` file in the root of the `eventbridge-lambda-construct`. This file should contains the following information:
 
-Once the virtualenv is activated, you can install the required dependencies.
+    {
+        "account": "YOUR-ACCOUNT-NUMBER",
+        "region": "YOUR-REGION"
+    }
 
-```
-$ pip install -r requirements.txt
-```
+Once done, to build the stack simply run `cdk deploy`
 
-At this point you can now synthesize the CloudFormation template for this code.
+## Test the services
 
-```
-$ cdk synth
-```
+[TODO] Complete that Section
 
-To add additional dependencies, for example other CDK libraries, just add
-them to your `setup.py` file and rerun the `pip install -r requirements.txt`
-command.
+# Next Steps
 
-## Useful commands
+Using this construct, you can now add logic in you services to route the response payloads to another service using the `source` field in the messages, and hence build service choregraphy without having to manage endpoints and scalability in the service logic.
 
- * `cdk ls`          list all stacks in the app
- * `cdk synth`       emits the synthesized CloudFormation template
- * `cdk deploy`      deploy this stack to your default AWS account/region
- * `cdk diff`        compare deployed stack with current state
- * `cdk docs`        open CDK documentation
+# Cleanup
 
-Enjoy!
+To remove the Stack, simply run `cdk destroy`.
